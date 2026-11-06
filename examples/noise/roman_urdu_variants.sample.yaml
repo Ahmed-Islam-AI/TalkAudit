@@ -1,0 +1,28 @@
+# Format sample only. The real lexicon lives in packs/ and needs 150+ entries collected from real public text and native speakers.
+kind: Lexicon
+spec_version: 1
+id: roman_urdu_variants
+version: 0.1.0
+status: draft
+reviewed_by: []
+entries:
+  - { canonical: nahi,    variants: { nahi: 0.35, nai: 0.25, nhi: 0.3, nahin: 0.1 } }
+  - { canonical: hai,     variants: { hai: 0.5, h: 0.3, he: 0.2 } }
+  - { canonical: mera,    variants: { mera: 0.6, mra: 0.3, meraa: 0.1 } }
+  - { canonical: kya,     variants: { kya: 0.5, kia: 0.4, ky: 0.1 } }
+  - { canonical: please,  variants: { please: 0.4, plz: 0.4, pls: 0.2 } }
+  - { canonical: lekin,   variants: { lekin: 0.5, lekn: 0.3, lkn: 0.2 } }
+  - { canonical: paise,   variants: { paise: 0.5, pese: 0.25, paisay: 0.25 } }
+  - { canonical: gaya,    variants: { gaya: 0.5, gya: 0.45, gayaa: 0.05 } }
+  - { canonical: kar do,  variants: { "kar do": 0.4, krdo: 0.35, "kr do": 0.25 } }
+  - { canonical: abhi,    variants: { abhi: 0.6, abi: 0.3, abhe: 0.1 } }
+amount_renderings:
+  short_k:           ["{k}k", "{k}K"]                 # 5000 -> 5k
+  digits_no_comma:   ["{n}"]
+  digits_with_comma: ["{n_comma}"]
+  rs_prefix:         ["Rs.{n}", "Rs {n_comma}", "PKR {n}"]
+  urdu_words:        ["{urdu_words}"]                 # 5000 -> paanch hazar
+date_renderings:
+  relative:  ["{relative}"]                           # 2026-11-09 with clock 2026-11-10 -> kal
+  day_month: ["{d} {mon}"]                            # 9 Nov
+  numeric:   ["{d}/{m}", "{d}-{m}-{yyyy}"]

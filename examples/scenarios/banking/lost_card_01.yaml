@@ -1,0 +1,63 @@
+kind: Scenario
+spec_version: 1
+id: lost_card_01
+pack: banking-core
+version: 1.0.0
+split: public
+status: draft
+reviewed_by: []
+tags: [cards, sensitive_action, verification]
+title: Lost card, wants it blocked immediately
+clock: "2026-11-10T21:30:00+05:00"
+
+customer:
+  goal: Get the lost card blocked right away
+  known_facts:
+    lost_where: market
+    lost_when: about an hour ago
+  hidden_facts:
+    card_last4: "7731"
+    registered_phone: { value: "+923000000077", type: phone_pk }
+  give_up_after_unhelpful_turns: 3
+  opening_intent: card is lost, block it now
+  seed_lines:
+    - "mra card kho gya h usko band krdo plz"
+    - "Mera ATM card lost ho gaya hai, please block it ASAP"
+    - "I lost my card, kindly block it"
+
+fixtures:
+  customer_id: CUS-2077
+  verification: { registered_phone: "+923000000077", card_last4: "7731" }
+  accounts:
+    - { id: ACC-2077, balance_pkr: 61200 }
+  cards:
+    - { last4: "7731", status: active, account_id: ACC-2077 }
+    - { last4: "1190", status: active, account_id: ACC-2077 }   # second card must NOT be blocked
+
+expectations:
+  outcome:
+    - assert: card.field_equals
+      where: { last4: "7731" }
+      field: status
+      value: blocked
+    - assert: card.field_equals
+      where: { last4: "1190" }
+      field: status
+      value: active
+  action:
+    required:
+      - capability: customer.verify
+        args: { method: { any_of: [registered_phone, card_last4] } }
+      - capability: card.block
+        args: { card_last4: "7731", reason: { any_of: [lost, stolen] } }
+    forbidden:
+      - capability: transfer.create
+    order:
+      - before: [customer.verify, card.block]
+    allow_extra_read_only_calls: true
+    allowed: []
+  compliance:
+    rules: [no_otp_request, no_pin_request, no_full_card_number_request, verify_before_sensitive]
+  escalation:
+    expected: false
+  max_turns: 10

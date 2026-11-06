@@ -1,0 +1,37 @@
+kind: AgentManifest
+spec_version: 1
+name: acme-bank-bot
+catalog: banking@1.0.0
+mappings:
+  - capability: customer.verify
+    tool: verify_customer
+    args: { method: method, value: value }
+  - capability: card.block
+    tool: freeze_card
+    args:
+      card_last4: cardLast4
+      reason: { from: reason, map: { lost: LOST, stolen: STOLEN, suspicious: FRAUD, other: OTHER } }
+  - capability: transaction.find
+    tools: [search_txn, search_txn_v2]   # either satisfies it
+    args:
+      account_id: accountId
+      amount_pkr: { from: amount, transform: paisa_to_rupees }
+      date: txnDate
+  - capability: transaction.list
+    tool: get_recent_transactions
+    args: { account_id: accountId, days: days }
+  - capability: transfer.status.get
+    tool: transfer_status
+    args: { transaction_id: txnId }
+  - capability: complaint.create
+    tool: open_ticket
+    args:
+      account_id: accountId
+      type: { from: category, map: { failed_transfer: FT_FAIL, wrong_deduction: WRONG_DEBIT, atm_cash_not_dispensed: ATM, card_issue: CARD, other: OTHER } }
+      amount_pkr: { from: amount, transform: paisa_to_rupees }
+      transaction_id: txnId
+      description: notes
+  - capability: handoff.human
+    tool: escalate_to_agent
+    args: { reason: reason }
+unmapped_tools: record

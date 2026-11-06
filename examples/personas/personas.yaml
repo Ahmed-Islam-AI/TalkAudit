@@ -1,0 +1,108 @@
+# Format sample. Seed lines must be written and reviewed by native speakers before release.
+- kind: Persona
+  spec_version: 1
+  id: urdu_script
+  version: 1.0.0
+  status: draft
+  reviewed_by: []
+  label: Urdu script, simple everyday language
+  language_style: { primary: urdu, script: arabic, english_mixing: low, switches_mid_sentence: false }
+  literacy: medium
+  register: polite
+  noise_profile: light_urdu
+  amount_styles: [digits_with_comma, urdu_words]
+  date_styles: [relative, numeric]
+  seed_lines:
+    - "میرا کارڈ گم ہو گیا ہے، اسے بلاک کر دیں"
+    - "پیسے کٹ گئے لیکن ٹرانسفر نہیں ہوا"
+  forbidden: [mentions being an AI or a test]
+
+- kind: Persona
+  spec_version: 1
+  id: roman_clean
+  version: 1.0.0
+  status: draft
+  reviewed_by: []
+  label: Clean Roman Urdu
+  language_style: { primary: roman_urdu, script: latin, english_mixing: low, switches_mid_sentence: false }
+  literacy: medium
+  register: polite
+  noise_profile: light_roman
+  amount_styles: [digits_with_comma, rs_prefix]
+  date_styles: [relative, day_month]
+  seed_lines:
+    - "Mera card gum ho gaya hai, please isay block kar dein"
+    - "Paise kat gaye hain lekin transfer nahi hua"
+  forbidden: [mentions being an AI or a test]
+
+- kind: Persona
+  spec_version: 1
+  id: roman_messy
+  version: 1.0.0
+  status: draft
+  reviewed_by: []
+  label: Messy SMS-style Roman Urdu
+  language_style: { primary: roman_urdu, script: latin, english_mixing: medium, switches_mid_sentence: true }
+  literacy: low_formal
+  register: informal
+  noise_profile: sms_heavy
+  amount_styles: [short_k, digits_no_comma, urdu_words]
+  date_styles: [relative, numeric]
+  seed_lines:
+    - "mra card kho gya h usko band krdo plz"
+    - "paise kat gye h lekn transfer nai hua"
+    - "kb tk ho jaega ye"
+  forbidden: [mentions being an AI or a test, perfect grammar and punctuation]
+
+- kind: Persona
+  spec_version: 1
+  id: code_switch
+  version: 1.0.0
+  status: draft
+  reviewed_by: []
+  label: Urdu-English code switcher (urban professional)
+  language_style: { primary: mixed, script: latin, english_mixing: high, switches_mid_sentence: true }
+  literacy: high
+  register: informal
+  noise_profile: light_roman
+  amount_styles: [rs_prefix, short_k]
+  date_styles: [relative, day_month]
+  seed_lines:
+    - "Mera ATM card lost ho gaya hai, please block it ASAP"
+    - "Yaar transfer kiya tha 5k ka, abhi tak receive nahi hua"
+  forbidden: [mentions being an AI or a test]
+
+- kind: Persona
+  spec_version: 1
+  id: english
+  version: 1.0.0
+  status: draft
+  reviewed_by: []
+  label: Pakistani English
+  language_style: { primary: english, script: latin, english_mixing: none, switches_mid_sentence: false }
+  literacy: high
+  register: polite
+  noise_profile: clean_english   # no noise operations; its lexicon holds the English amount and date renderings
+  amount_styles: [rs_prefix, digits_with_comma]
+  date_styles: [relative, day_month]
+  seed_lines:
+    - "I lost my card, kindly block it"
+    - "Money has been deducted but the transfer did not go through"
+  forbidden: [mentions being an AI or a test]
+
+- kind: Persona
+  spec_version: 1
+  id: voice_note
+  version: 1.0.0
+  status: draft
+  reviewed_by: []
+  label: Voice-note transcript style (long, run-on, no punctuation)
+  language_style: { primary: roman_urdu, script: latin, english_mixing: medium, switches_mid_sentence: true }
+  literacy: low_formal
+  register: informal
+  noise_profile: voice_transcript
+  amount_styles: [urdu_words, digits_no_comma]
+  date_styles: [relative]
+  seed_lines:
+    - "assalam o alaikum wo main ne kal apne dost ko paanch hazar bheje the to wo paise mere account se kat gaye hain lekin usko mile nahi abhi tak to aap check kar dein please"
+  forbidden: [mentions being an AI or a test, punctuation]

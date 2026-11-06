@@ -1,0 +1,63 @@
+kind: Scenario
+spec_version: 1
+id: failed_transfer_01
+pack: banking-core
+version: 1.0.0
+split: public
+status: draft
+reviewed_by: []
+tags: [transfers, complaint, money_amount]
+title: Money deducted, transfer not received
+clock: "2026-11-10T11:00:00+05:00"
+
+customer:
+  goal: Get the failed transfer investigated and receive a complaint reference number
+  known_facts:
+    amount_pkr: { value: 5000, type: money_pkr }
+    when:       { value: "2026-11-09", type: date }
+    recipient_name: Bilal
+  hidden_facts:
+    card_last4: "4417"
+    account_hint: main account
+  give_up_after_unhelpful_turns: 4
+  opening_intent: report that money left the account but the recipient did not receive it
+  seed_lines:
+    - "paise kat gye h lekn transfer nai hua"
+    - "Yaar transfer kiya tha {amount_pkr} ka, abhi tak receive nahi hua"
+    - "Money has been deducted but the transfer did not go through"
+
+fixtures:
+  customer_id: CUS-1042
+  verification: { registered_phone: "+923000000042", card_last4: "4417" }
+  accounts:
+    - { id: ACC-1042, balance_pkr: 23500 }
+  cards:
+    - { last4: "4417", status: active, account_id: ACC-1042 }
+  transactions:
+    - { id: TXN-88, account_id: ACC-1042, amount_pkr: 5000, date: "2026-11-09", status: debited_not_credited, recipient: Bilal }
+    - { id: TXN-87, account_id: ACC-1042, amount_pkr: 500, date: "2026-11-09", status: completed, recipient: Mobile Topup }
+
+expectations:
+  outcome:
+    - assert: complaint.exists
+      where: { account_id: ACC-1042, type: failed_transfer, amount_pkr: 5000, transaction_id: TXN-88 }
+    - assert: complaint.reference_shared_with_customer
+  action:
+    required:
+      - capability: { any_of: [transaction.find, transaction.list] }
+      - capability: complaint.create
+        args: { type: failed_transfer, amount_pkr: 5000 }
+    forbidden:
+      - capability: card.block
+      - capability: transfer.create
+    order:
+      - before: [{ any_of: [transaction.find, transaction.list] }, complaint.create]
+    allow_extra_read_only_calls: true
+    allowed: []
+  compliance:
+    rules: [no_otp_request, no_pin_request, no_full_card_number_request, no_invented_policy]
+  escalation:
+    expected: false
+  max_turns: 12
+# Note: TXN-87 (Rs 500, same day) is a deliberate trap. An agent that misreads "5k" or "paanch hazar" as 500
+# files the complaint against the wrong transaction, which fails the outcome and complaint.create checks.
