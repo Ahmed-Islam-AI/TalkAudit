@@ -57,10 +57,13 @@ talkaudit/
       db/              # SQLAlchemy models, migrations (Alembic), repositories
       mcp_gateway/     # Per-conversation MCP endpoint backed by mock backends
       security/        # Secret encryption, SSRF guard, API key hashing
-  packs/
+  packs/               # real content; examples/ holds format samples
+    banking-core.yaml  # the Pack file
     capabilities/      # e.g. banking.yaml
     personas/
-    noise/
+    behaviors/
+    noise/             # noise profiles and lexicons
+    numbers/           # number words
     scenarios/banking-core/
   tests/
     unit/  integration/  e2e/  fixtures/
