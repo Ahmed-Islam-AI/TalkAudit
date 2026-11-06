@@ -15,7 +15,14 @@ def store(request: pytest.FixtureRequest) -> Store:
 
 
 def run(org_id: str = "org_a", run_id: str = "run_1") -> Run:
-    return Run(org_id=org_id, id=run_id, status="running", seed=42, manifest={})
+    return Run(
+        org_id=org_id,
+        id=run_id,
+        pack="banking-core@0.1.0",
+        status="running",
+        seed=42,
+        manifest={},
+    )
 
 
 def conversation(
