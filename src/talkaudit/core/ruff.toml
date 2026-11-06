@@ -1,0 +1,19 @@
+# Enforces the core import boundary (AGENTS.md hard rules, docs/10-RULES.md 2 and 4).
+extend = "../../../pyproject.toml"
+
+[lint]
+extend-select = ["TID251"]
+
+[lint.flake8-tidy-imports.banned-api]
+"talkaudit.cli".msg = "core must not import the CLI"
+"talkaudit.server".msg = "core must not import the server"
+"fastapi".msg = "core must not import web frameworks"
+"starlette".msg = "core must not import web frameworks"
+"sqlalchemy".msg = "core must not import DB libraries"
+"alembic".msg = "core must not import DB libraries"
+"openai".msg = "no provider SDKs: use talkaudit.core.llm on httpx"
+"anthropic".msg = "no provider SDKs: use talkaudit.core.llm on httpx"
+"groq".msg = "no provider SDKs: use talkaudit.core.llm on httpx"
+"google.genai".msg = "no provider SDKs: use talkaudit.core.llm on httpx"
+"google.generativeai".msg = "no provider SDKs: use talkaudit.core.llm on httpx"
+"litellm".msg = "no provider SDKs: use talkaudit.core.llm on httpx"

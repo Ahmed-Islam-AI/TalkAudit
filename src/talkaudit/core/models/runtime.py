@@ -1,0 +1,147 @@
+"""Runtime records: what happened in a run. Every record that is stored carries org_id.
+
+Only the fields the ports need today; T1.1 completes them per docs/03-ARCHITECTURE.md §6.
+"""
+
+from typing import Any, Literal, Self
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+GraderName = Literal["sim_fidelity", "outcome", "action", "compliance", "language_fit"]
+TrustLevel = Literal["exact", "self_reported", "none"]
+GradeTrust = Literal["exact", "self_reported", "judge", "none"]
+ToolSource = Literal["harness", "mcp", "self_reported"]
+RunStatus = Literal[
+    "queued",
+    "preparing",
+    "running",
+    "grading",
+    "completed",
+    "completed_with_warnings",
+    "failed",
+    "cancelling",
+    "cancelled",
+]
+
+
+class Record(BaseModel):
+    # Frozen: graders and stats work on records that must not change under them.
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+
+class TokenUsage(Record):
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+
+
+class ToolSpec(Record):
+    name: str
+    description: str
+    parameters: dict[str, Any]  # JSON schema
+
+
+class ToolRequest(Record):
+    """A tool call as the agent or LLM made it, before manifest mapping."""
+
+    id: str
+    name: str
+    args: dict[str, Any]
+
+
+class ToolCall(Record):
+    """A recorded tool call. `capability` and `normalized_args` are set once mapped."""
+
+    id: str
+    tool_name: str
+    args: dict[str, Any]
+    result: Any = None
+    capability: str | None = None
+    normalized_args: dict[str, Any] | None = None
+    source: ToolSource
+
+
+class LLMMessage(Record):
+    role: Literal["system", "user", "assistant", "tool"]
+    content: str = ""
+    tool_calls: list[ToolRequest] = []
+    tool_call_id: str | None = None
+
+
+class LLMResponse(Record):
+    model: str
+    text: str | None = None
+    tool_calls: list[ToolRequest] = []
+    parsed: dict[str, Any] | None = None  # set when a response_schema was given
+    usage: TokenUsage = TokenUsage()
+
+
+class CustomerMessage(Record):
+    text: str  # what the agent sees, after noise
+    raw_text: str  # placeholders filled, before noise
+
+
+class AgentReply(Record):
+    text: str
+    tool_calls: list[ToolCall] = []
+    ended: bool = False
+    handoff_to_human: bool = False
+    latency_ms: int = 0
+    usage: TokenUsage | None = None
+
+
+class Turn(Record):
+    index: int
+    role: Literal["customer", "agent", "tool"]
+    text: str
+    raw_text: str | None = None
+    latency_ms: int | None = None
+    tool_calls: list[ToolCall] = []
+
+
+class ConversationRecord(Record):
+    org_id: str
+    run_id: str
+    id: str
+    scenario_id: str
+    persona_id: str
+    behavior_id: str
+    repetition: int
+    status: Literal["completed", "sim_invalid", "infra_failed"]
+    stop_reason: (
+        Literal["goal_reached", "gave_up", "agent_ended", "handoff", "max_turns", "error"] | None
+    )
+    turns: list[Turn]
+    final_state: dict[str, Any]
+
+
+class Run(Record):
+    org_id: str
+    id: str
+    status: RunStatus
+    seed: int
+    manifest: dict[str, Any]  # reproducibility manifest, docs/03-ARCHITECTURE.md §12
+
+
+class Evidence(Record):
+    turn_index: int | None = None
+    tool_call_id: str | None = None
+    entity: str | None = None  # mock-state entity id, e.g. "complaint:CMP-0001"
+    quote: str | None = None
+
+    @model_validator(mode="after")
+    def _points_somewhere(self) -> Self:
+        if self.turn_index is None and self.tool_call_id is None and self.entity is None:
+            raise ValueError("evidence must point to a turn, a tool call or an entity")
+        return self
+
+
+class Grade(Record):
+    org_id: str
+    conversation_id: str
+    grader: GraderName
+    grader_version: str
+    passed: bool
+    reason: str
+    evidence: list[Evidence] = Field(min_length=1)  # no grade without evidence
+    trust: GradeTrust
+    details: dict[str, Any] = {}
