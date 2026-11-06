@@ -30,17 +30,17 @@ First paying customer is most likely an AI vendor or agency, not a bank directly
 
 ## 4. Lessons from existing tools
 
-The closest existing tool is `hinglish-caller-bench` (India, MIT, released Oct 2026). Reading its docs, these are the weaknesses TalkAudit must not repeat:
+The closest existing tool is `hinglish-caller-bench` (India, MIT, released Oct 2026). Reading its docs and source (commit `58c936b`, see `docs/notes/prior-art.md`), these are the weaknesses TalkAudit must not repeat:
 
 | # | Weakness in existing tool | Why it matters | TalkAudit answer |
 |---|---|---|---|
 | L1 | Harness sends its own system prompt and tool list to the agent | Tests a model, not the company's real deployed bot | Black-box mode: talk to the real agent through its own chat API. Sandbox mode stays for model benchmarks |
 | L2 | Scenarios hard-code tool names (`lookup_order`); adapter only on roadmap | Every company must rename tools before testing | Scenarios reference abstract **capabilities**; each company maps them once in an **agent manifest** |
-| L3 | Tool correctness checks a required call sequence | Valid alternative paths fail. Inflates the "wrong tool" rate | Constraint-based grading: required set, forbidden set, only the ordering rules the business actually needs |
-| L4 | Reports pass@k (at least one of k runs succeeds) | Flatters agents. A bank needs every attempt to work | Report **pass^k** (all k succeed) as the headline reliability metric; pass@k only as secondary |
-| L5 | Very small samples (9 conversations per cell in the published baseline) | Percentages like 0% or 22% swing wildly with one result | Minimum sample rules, Wilson intervals on every number, "insufficient data" label when samples are too small |
+| L3 | Each requirement names exactly one tool, and arguments are compared as raw values (`"5000"` ≠ `5000`) | Valid alternative paths and equivalent values fail. Inflates the "wrong tool" rate | Constraint-based grading in capability space: type-normalized arguments, `any_of` capability groups, forbidden set, only the ordering rules the business actually needs |
+| L4 | Metric mislabelled: the code computes pass^k (all k succeed) but names and documents it as pass@k (at least one succeeds) | Readers can't tell which reliability claim is made. Real pass@k would flatter agents; a bank needs every attempt to work | Name both metrics explicitly. Report **pass^k** as the headline reliability metric, pass@k only as secondary, with tests that tell them apart |
+| L5 | Very small samples (9 conversations per cell in the published baseline). Wilson intervals are shown, but nothing flags numbers too small to read | Percentages like 0% or 22% swing wildly with one result | Minimum sample rules with warnings and "insufficient data" labels, on top of Wilson intervals on every number |
 | L6 | Language-fit judge self-reported as scoring too high | Unreliable metric | Binary rubric items, human-labelled gold set, judge agreement reported on every report |
-| L7 | Personas are language only | Real customers are vague, impatient, change their mind | Persona = language style × behavior × literacy × channel |
+| L7 | Behavior traits exist in the persona schema, but no code uses them, so personas act as language only | Real customers are vague, impatient, change their mind | Behavior is its own axis, applied on top of any persona: language style × behavior × literacy × channel |
 | L8 | Simulator quality not measured | If the fake customer breaks character, the agent gets blamed | Simulator fidelity checks per turn; failed simulations excluded and reported separately |
 | L9 | No compliance checks | Banks care most about this | Compliance grader with configurable rules (sensitive data, identity verification, escalation, made-up policy) |
 | L10 | Single-user CLI, no regression comparison | Can't serve many companies or track versions | Multi-tenant API, runs linked to agent versions, run-to-run diff |
