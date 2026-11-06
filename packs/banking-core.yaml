@@ -1,0 +1,10 @@
+kind: Pack
+spec_version: 1
+name: banking-core
+version: 0.1.0
+catalog: banking@1.0.0
+mock_backend: banking@1
+number_words: urdu_numbers@0.1.0
+scenarios: [scenarios/banking-core/*.yaml]
+personas: [urdu_script, roman_clean, roman_messy, code_switch, english, voice_note]
+behaviors: [default, impatient, vague]
