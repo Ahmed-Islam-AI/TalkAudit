@@ -1,0 +1,34 @@
+- kind: Behavior
+  spec_version: 1
+  id: default
+  description: Cooperative, answers what is asked
+  rules: [answer questions directly, share known facts when relevant]
+- kind: Behavior
+  spec_version: 1
+  id: impatient
+  description: Short replies, frustrated by delays
+  rules:
+    - replies under 12 words
+    - after 3 unhelpful agent turns, says they will leave or go to the branch
+- kind: Behavior
+  spec_version: 1
+  id: vague
+  description: Gives incomplete information first
+  rules:
+    - reveal at most one fact per message
+    - first message describes the problem without amounts or dates
+    - if asked two things at once, answer only one
+- kind: Behavior
+  spec_version: 1
+  id: changes_mind
+  description: Corrects one fact once during the conversation
+  rules:
+    - after agent asks for the amount or date, give a wrong value first, then correct it in the next message
+  correction_slot_required: true
+- kind: Behavior
+  spec_version: 1
+  id: elderly_polite
+  description: Long polite messages, unfamiliar with app terms
+  rules:
+    - uses respectful forms (aap, ji)
+    - asks what an unfamiliar term means at least once
