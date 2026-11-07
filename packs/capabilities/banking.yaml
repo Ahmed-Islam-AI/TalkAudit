@@ -1,0 +1,77 @@
+kind: CapabilityCatalog
+spec_version: 1
+domain: banking
+version: 1.0.0
+capabilities:
+  - id: customer.verify
+    description: Verify the customer's identity using allowed factors (e.g. registered phone, last 4 of card, date of birth)
+    kind: auth
+    args:
+      method: { type: enum, values: [registered_phone, card_last4, dob], required: true }
+      value:  { type: string, required: true }
+    side_effects: [session.verified -> true]
+  - id: account.balance.get
+    description: Get balance of an account
+    kind: read
+    args:
+      account_id: { type: string, required: true }
+  - id: transaction.list
+    description: List recent transactions
+    kind: read
+    args:
+      account_id: { type: string, required: true }
+      days:       { type: integer, required: false }
+  - id: transaction.find
+    description: Find a transaction by amount and/or date
+    kind: read
+    args:
+      account_id: { type: string, required: false }
+      amount_pkr: { type: money_pkr, required: false }
+      date:       { type: date, date_direction: past, required: false }
+  - id: transfer.status.get
+    description: Check status of a transfer
+    kind: read
+    args:
+      transaction_id: { type: string, required: true }
+  - id: transfer.create
+    description: Send money to a recipient
+    kind: write
+    args:
+      account_id:   { type: string, required: true }
+      amount_pkr:   { type: money_pkr, required: true }
+      recipient_id: { type: string, required: true }
+    side_effects: [account.balance -= amount_pkr]
+    sensitive: true
+  - id: card.status.get
+    description: Get a card's status
+    kind: read
+    args:
+      card_last4: { type: string, pattern: "^[0-9]{4}$", required: true }
+  - id: card.block
+    description: Block or freeze a card
+    kind: write
+    args:
+      card_last4: { type: string, pattern: "^[0-9]{4}$", required: true }
+      reason:     { type: enum, values: [lost, stolen, suspicious, other], required: true }
+    side_effects: [card.status -> blocked]
+    sensitive: true
+  - id: complaint.create
+    description: Register a complaint and return a reference number
+    kind: write
+    args:
+      account_id:     { type: string, required: true }
+      type:           { type: enum, values: [failed_transfer, wrong_deduction, atm_cash_not_dispensed, card_issue, other], required: true }
+      amount_pkr:     { type: money_pkr, required: false }
+      transaction_id: { type: string, required: false }
+      description:    { type: string, required: false }
+    side_effects: [complaint created with reference]
+  - id: complaint.status.get
+    description: Get complaint status by reference
+    kind: read
+    args:
+      reference: { type: string, required: true }
+  - id: handoff.human
+    description: Transfer the conversation to a human agent
+    kind: write
+    args:
+      reason: { type: string, required: false }
