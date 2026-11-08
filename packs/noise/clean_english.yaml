@@ -1,0 +1,8 @@
+# No noise. Exists so English personas get English amount and date renderings from a lexicon.
+kind: NoiseProfile
+spec_version: 1
+id: clean_english
+version: 0.1.0
+lexicon: english_basic@0.1.0
+operations: []
+protected_slots: true
