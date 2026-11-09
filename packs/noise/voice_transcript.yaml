@@ -1,0 +1,11 @@
+# Draft. Voice-note transcripts: no punctuation, all lowercase, frequent spelling variants.
+kind: NoiseProfile
+spec_version: 1
+id: voice_transcript
+version: 0.1.0
+lexicon: roman_urdu_variants@0.1.0
+operations:
+  - { op: spelling_variant, probability: 0.4 }
+  - { op: drop_punctuation, probability: 1.0 }
+  - { op: lowercase, probability: 1.0 }
+protected_slots: true
