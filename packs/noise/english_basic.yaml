@@ -1,0 +1,14 @@
+# Draft. No spelling variants: English personas get no noise, only English amount and date styles.
+kind: Lexicon
+spec_version: 1
+id: english_basic
+version: 0.1.0
+status: draft
+reviewed_by: []
+entries: []
+amount_renderings:
+  digits_with_comma: ["{n_comma}"]
+  rs_prefix:         ["Rs. {n_comma}", "PKR {n_comma}"]
+date_renderings:
+  relative:  ["{relative}"]
+  day_month: ["{d} {mon}"]
