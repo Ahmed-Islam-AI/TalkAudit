@@ -1,0 +1,15 @@
+# Draft. Urdu-script spelling variants are pending native-speaker input; until then this lexicon
+# only defines how Urdu-script personas write amounts and dates.
+kind: Lexicon
+spec_version: 1
+id: urdu_variants
+version: 0.1.0
+status: draft
+reviewed_by: []
+entries: []
+amount_renderings:
+  digits_with_comma: ["{n_comma}"]
+  urdu_words:        ["{urdu_words}"]
+date_renderings:
+  relative: ["{relative}"]
+  numeric:  ["{d}/{m}", "{d}-{m}-{yyyy}"]
