@@ -1,0 +1,12 @@
+# Draft. Probabilities are first guesses, to be tuned against real customer text.
+kind: NoiseProfile
+spec_version: 1
+id: light_roman
+version: 0.1.0
+lexicon: roman_urdu_variants@0.1.0
+operations:
+  - { op: spelling_variant, probability: 0.2 }
+  - { op: drop_punctuation, probability: 0.3 }
+  - { op: lowercase, probability: 0.3 }
+  - { op: typo, probability: 0.02 }
+protected_slots: true
