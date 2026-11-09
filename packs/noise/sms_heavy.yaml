@@ -1,0 +1,13 @@
+kind: NoiseProfile
+spec_version: 1
+id: sms_heavy
+version: 1.0.0
+lexicon: roman_urdu_variants@0.1.0
+operations:
+  - { op: spelling_variant, probability: 0.6 }
+  - { op: vowel_drop, probability: 0.3, min_len: 4 }
+  - { op: abbreviation, probability: 0.4 }
+  - { op: drop_punctuation, probability: 0.8 }
+  - { op: lowercase, probability: 0.9 }
+  - { op: typo, probability: 0.05 }
+protected_slots: true
