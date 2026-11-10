@@ -1,0 +1,34 @@
+# Draft starter number words. T1.3 completes 0-99; a native speaker reviews all spellings.
+kind: NumberWords
+spec_version: 1
+id: urdu_numbers
+version: 0.1.0
+status: draft
+reviewed_by: []
+digits: "۰۱۲۳۴۵۶۷۸۹"
+numbers:
+  - { value: 1, roman: [ek, aik], urdu: [ایک] }
+  - { value: 2, roman: [do], urdu: [دو] }
+  - { value: 3, roman: [teen], urdu: [تین] }
+  - { value: 5, roman: [paanch, panch], urdu: [پانچ] }
+  - { value: 10, roman: [das], urdu: [دس] }
+  - { value: 15, roman: [pandrah, pandra], urdu: [پندرہ] }
+  - { value: 50, roman: [pachaas, pachas], urdu: [پچاس] }
+counts:
+  - { value: 1.5, roman: [dairh, derh], urdu: [ڈیڑھ] }
+  - { value: 2.5, roman: [dhai, adhai], urdu: [ڈھائی] }
+modifiers:
+  - { add: 0.25, roman: [sawa], urdu: [سوا] }
+  - { add: 0.5, roman: [saarhay, sarhe], urdu: [ساڑھے] }
+  - { add: -0.25, roman: [paune], urdu: [پونے] }
+multipliers:
+  - { value: 100, roman: [sau], urdu: [سو] }
+  - { value: 1000, roman: [hazar, hazaar, k], urdu: [ہزار] }
+  - { value: 100000, roman: [lakh, lac], urdu: [لاکھ] }
+  - { value: 10000000, roman: [crore, karor], urdu: [کروڑ] }
+relative_days:
+  - { days: 0, direction: either, roman: [aaj], urdu: [آج], english: [today] }
+  - { days: 1, direction: either, roman: [kal], urdu: [کل] }
+  - { days: 1, direction: past, english: [yesterday] }
+  - { days: 1, direction: future, english: [tomorrow] }
+  - { days: 2, direction: either, roman: [parson], urdu: [پرسوں] }
