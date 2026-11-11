@@ -80,7 +80,10 @@ class ScriptedLLM:
 class FakeToolExecutor:
     """Answers each tool with a fixed result and records calls like the real executor."""
 
-    def __init__(self, results: dict[str, Any], specs: Sequence[ToolSpec] = ()) -> None:
+    def __init__(
+        self, org_id: str, results: dict[str, Any], specs: Sequence[ToolSpec] = ()
+    ) -> None:
+        self._org_id = org_id
         self._results = results
         self._specs = list(specs)
         self.calls: list[ToolCall] = []
@@ -90,6 +93,7 @@ class FakeToolExecutor:
 
     async def call(self, request: ToolRequest) -> ToolCall:
         call = ToolCall(
+            org_id=self._org_id,
             id=request.id,
             tool_name=request.name,
             args=request.args,
