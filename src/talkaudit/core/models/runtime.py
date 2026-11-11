@@ -1,8 +1,7 @@
-"""Runtime records: what happened in a run. Every record that is stored carries org_id.
+"""Runtime records: what happened in a run. Runs, conversations, turns, tool calls and grades
+carry org_id (docs/03-ARCHITECTURE.md §6). Fields are added when a task needs them."""
 
-Only the fields the ports need today; T1.1 completes them per docs/03-ARCHITECTURE.md §6.
-"""
-
+from datetime import datetime
 from typing import Any, Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -51,6 +50,7 @@ class ToolRequest(Record):
 class ToolCall(Record):
     """A recorded tool call. `capability` and `normalized_args` are set once mapped."""
 
+    org_id: str
     id: str
     tool_name: str
     args: dict[str, Any]
@@ -90,12 +90,14 @@ class AgentReply(Record):
 
 
 class Turn(Record):
+    org_id: str
     index: int
     role: Literal["customer", "agent", "tool"]
     text: str
     raw_text: str | None = None
     latency_ms: int | None = None
     tool_calls: list[ToolCall] = []
+    meta: dict[str, Any] = {}
 
 
 class ConversationRecord(Record):
@@ -113,13 +115,24 @@ class ConversationRecord(Record):
     turns: list[Turn]
     final_state: dict[str, Any]
 
+    @model_validator(mode="after")
+    def _one_org(self) -> Self:
+        orgs = {t.org_id for t in self.turns} | {c.org_id for t in self.turns for c in t.tool_calls}
+        if orgs - {self.org_id}:
+            raise ValueError("every turn and tool call must belong to the conversation's org")
+        return self
+
 
 class Run(Record):
     org_id: str
     id: str
+    pack: str  # e.g. "banking-core@0.1.0"
     status: RunStatus
     seed: int
     manifest: dict[str, Any]  # reproducibility manifest, docs/03-ARCHITECTURE.md §12
+    started_at: datetime | None = None
+    finished_at: datetime | None = None
+    error: str | None = None
 
 
 class Evidence(Record):
